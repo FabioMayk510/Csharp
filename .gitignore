@@ -1,0 +1,4 @@
+#pastas a serem ignoradas
+.vscode
+bin
+obj
