@@ -8,7 +8,7 @@ namespace AgenciaBancaria.Dominio
 {
     public class ContaPoupanca : ContaBancaria
     {
-        public ContaPoupanca(Cliente cliente): base(cliente)
+        public ContaPoupanca(Cliente cliente, decimal rendimento): base(cliente)
         {
             // 0,30%
             PercentualRendimento = 0.003M;

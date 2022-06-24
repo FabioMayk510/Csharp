@@ -29,16 +29,35 @@ namespace AgenciaBancaria.Dominio
             Lancamentos = new List<Lancamento>();
         }
 
+        public void Fechar(string senha)
+        {
+            while(senha != Senha){
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Senha Incorreta, tente novamente.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("> ");
+                senha = Console.ReadLine();
+            }
+            Situacao = SituacaoConta.Encerrada;
+            DataEncerramento = DateTime.Now;
+
+            Console.Clear();
+        }
+
         private void SetaSenha(string senha)
         {
             senha = senha.ValidaStringVazia();
 
             // Minimum eight characters, at least one letter and one number
-            if (!Regex.IsMatch(senha, @"^(?=.*?[a-z])(?=.*?[0-9]).{8,}$"))
-            {
-                throw new Exception("Senha inválida");
+            while(!Regex.IsMatch(senha, @"^(?=.*?[a-z])(?=.*?[0-9]).{8,}$")){
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Senha inválida. Por favor, siga o padrão de senha aceitável");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("> ");
+                senha = Console.ReadLine();
+                Console.Clear();
             }
-
             Senha = senha;
         }
 
@@ -52,20 +71,27 @@ namespace AgenciaBancaria.Dominio
 
         public virtual void Sacar(decimal valor, string senha)
         {
-            if (senha != Senha)
-            {
-                throw new Exception("Senha incorreta.");
+            while(senha != Senha){
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Senha Incorreta, tente novamente.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("> ");
+                senha = Console.ReadLine();
             }
 
             var saque = new Saque(valor, DateTime.Now, this);
 
             if (Saldo < saque.Valor)
             {
-                throw new Exception("Saldo indisponível.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Saldo indisponível.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.ReadLine();
+            } else {
+                Saldo -= saque.Valor;
+                Lancamentos.Add(saque);
             }
-
-            Saldo -= saque.Valor;
-            Lancamentos.Add(saque);
         }
 
         public string VerSaldo()
@@ -84,11 +110,13 @@ namespace AgenciaBancaria.Dominio
                 sb.Append(lancamento.GetType().Name + "  -->  ");
                 sb.Append(lancamento.Data.ToString("dd/MM/yyyy hh:mm:ss" + "   -->  "));
 
-                if (lancamento is Saque)
+                if (lancamento is Saque){
                     sb.Append(" - ");
+                }
 
-                if (lancamento is Deposito)
+                if (lancamento is Deposito){
                     sb.Append(" + ");
+                }
 
                 sb.Append("R$ ");
                 sb.AppendLine(lancamento.Valor.ToString());

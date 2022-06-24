@@ -16,9 +16,13 @@ namespace AgenciaBancaria.Dominio
 
         public override void Sacar(decimal valor, string senha)
         {
-            if (senha != Senha)
-            {
-                throw new Exception("Senha incorreta.");
+            while(senha != Senha){
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Senha Incorreta, tente novamente.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write("> ");
+                senha = Console.ReadLine();
             }
 
             var saque = new Saque(valor, DateTime.Now, this);
@@ -27,11 +31,14 @@ namespace AgenciaBancaria.Dominio
 
             if (valorMaximoSaque < saque.Valor)
             {
-                throw new Exception("O saldo + limite não são suficientes para realizar o saque.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Saldo indisponível.");
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.ReadLine();
+            } else {
+                Saldo -= saque.Valor;
+                Lancamentos.Add(saque);
             }
-
-            Saldo -= saque.Valor;
-            Lancamentos.Add(saque);
         }
 
         public override string VerExtrato()
